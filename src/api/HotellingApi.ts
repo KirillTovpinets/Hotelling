@@ -1,6 +1,6 @@
+import jsonApi from '@/app/api/jsonApi';
 import { BedResidence } from '@/interfaces';
 import { cache } from 'react';
-import { jsonApi } from './api';
 
 export const revalidate = 10;
 export const BEDS_CACHE_TAG = 'beds';

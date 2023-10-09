@@ -5,7 +5,7 @@ import { FunctionComponent } from 'react';
 interface ResidentsProps {}
 
 const Residents: FunctionComponent<ResidentsProps> = async () => {
-  const list = await fetchAllResidents(1);
+  const list = await fetchAllResidents('', 1);
   return (
     <>
       <div className="mb-5">

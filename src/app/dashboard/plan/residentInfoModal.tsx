@@ -1,53 +1,86 @@
-import { createNewResidence } from '@/api/ResidenceApi';
+import residenceApi, { createNewResidence } from '@/api/ResidenceApi';
 import Button from '@/app/layout/ui/Button';
 import Flex from '@/app/layout/ui/Flex';
 import FormInput from '@/app/layout/ui/FormInput';
 import Modal from '@/app/layout/ui/Modal';
 import { Visitor } from '@/interfaces';
+import { useFormik } from 'formik';
 import { useRouter } from 'next/navigation';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useEffect } from 'react';
 
 interface Props {
-  selectedBedId: number | null;
+  selectedBedId?: number;
+  residentId?: number;
 }
-const ResidentInfoModal: FunctionComponent<Props> = ({ selectedBedId }) => {
+const ResidentInfoModal: FunctionComponent<Props> = ({
+  selectedBedId,
+  residentId,
+}) => {
   const router = useRouter();
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
 
-    const formData = new FormData(event.currentTarget);
-
-    const visitor = Object.fromEntries(formData.entries()) as never as Visitor;
-
+  const handleSubmit = async (visitor: Visitor) => {
     const residence = {
       dateStart: new Date(),
       bedId: selectedBedId!,
       isPayed: false,
     };
 
-    await createNewResidence({ residence, visitor });
+    if (visitor.id) {
+      await residenceApi.updateVisitor(visitor);
+    } else {
+      await createNewResidence({ residence, visitor });
+    }
 
     router.refresh();
   };
 
+  const formik = useFormik({
+    initialValues: {
+      surname: '',
+      firstname: '',
+      appointment: '',
+      company: '',
+      middlename: '',
+      birthdayDate: '',
+      sex: '',
+      id: 0,
+    },
+    onSubmit: handleSubmit,
+  });
+
+  useEffect(() => {
+    if (!residentId) {
+      return;
+    }
+    residenceApi
+      .getResident(residentId)
+      .then((data) => formik.resetForm({ values: data }));
+  }, [residentId]);
+
   return (
     <Modal
       useForm
-      onSubmit={handleSubmit}
-      action={<Button type="submit">Заселить</Button>}
+      action={
+        <Button type="submit">{residentId ? 'Обновить' : 'Заселить'}</Button>
+      }
+      onSubmit={formik.handleSubmit}
+      onReset={formik.handleReset}
     >
       <Flex>
-        <FormInput label="Имя" name="firstname" />
-        <FormInput label="Фамилия" name="surname" />
+        <FormInput label="Имя" {...formik.getFieldProps('firstname')} />
+        <FormInput label="Фамилия" {...formik.getFieldProps('surname')} />
       </Flex>
       <Flex>
-        <FormInput label="Отчество" name="middlename" />
-        <FormInput label="Дата рождения" name="birthdayDate" />
+        <FormInput label="Отчество" {...formik.getFieldProps('middlename')} />
+        <FormInput
+          label="Дата рождения"
+          {...formik.getFieldProps('birthdayDate')}
+        />
       </Flex>
       <Flex>
-        <FormInput label="Должность" name="appointment" />
-        <FormInput label="Организация" name="company" />
-        <FormInput label="Пол" name="sex" />
+        <FormInput label="Должность" {...formik.getFieldProps('appointment')} />
+        <FormInput label="Организация" {...formik.getFieldProps('company')} />
+        <FormInput label="Пол" {...formik.getFieldProps('sex')} />
       </Flex>
     </Modal>
   );

@@ -19,6 +19,7 @@ const BlockSide: FunctionComponent<BlockSideProps> = ({ beds = [], room }) => {
           key={bed.id}
           index={bed.bed}
           id={bed.id}
+          residentId={bed.residence[0]?.visitorId}
           isBusy={bed.residence.length !== 0}
         />
       ))}

@@ -7,8 +7,9 @@ interface Props {
   id: number;
   index: number;
   isBusy: boolean;
+  residentId: number;
 }
-export function BedItem({ index, isBusy, id }: Props) {
+export function BedItem({ index, isBusy, id, residentId }: Props) {
   const { toggleState: openModalHandler } = useContext(ModalContext);
 
   return (
@@ -17,7 +18,7 @@ export function BedItem({ index, isBusy, id }: Props) {
         'p-4 border-solid border border-gray-300 rounded-md hover:bg-orange-300 cursor-pointer',
         { 'bg-blue-300': isBusy }
       )}
-      onClick={() => openModalHandler(id)}
+      onClick={() => openModalHandler({ id, residentId })}
     >
       {index}
     </button>

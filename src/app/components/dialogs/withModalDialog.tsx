@@ -2,13 +2,14 @@
 
 import { ModalContext } from '@/app/contexts';
 import ResidentInfoModal from '@/app/dashboard/plan/residentInfoModal';
+import { BedInfo } from '@/interfaces';
 import { FunctionComponent, PropsWithChildren, useState } from 'react';
 
 const WithModalDialog: FunctionComponent<PropsWithChildren> = ({
   children,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<BedInfo | null>(null);
 
   const toggleState = (data: any) => {
     setData(data);
@@ -16,7 +17,10 @@ const WithModalDialog: FunctionComponent<PropsWithChildren> = ({
   };
   return (
     <ModalContext.Provider value={{ isOpen, toggleState, data }}>
-      <ResidentInfoModal selectedBedId={data} />
+      <ResidentInfoModal
+        selectedBedId={data?.id}
+        residentId={data?.residentId}
+      />
       {children}
     </ModalContext.Provider>
   );

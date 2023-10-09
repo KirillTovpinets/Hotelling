@@ -1,11 +1,18 @@
-import { Gender } from '@/app/enums';
-
 export interface User {
   id: number;
   login: string;
   password: string;
   name: string;
   lastName: string;
+}
+
+export interface LoginCredentials {
+  login: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  token: string | null;
 }
 
 export interface CreateResidenceDTO {
@@ -45,10 +52,10 @@ export type Visitor = {
   firstname: string;
   surname: string;
   middlename: string;
-  birthdayDate: Date;
+  birthdayDate: string;
   appointment: string;
   company: string;
-  sex: Gender;
+  sex: string;
 };
 
 export type Floor = {
@@ -56,5 +63,9 @@ export type Floor = {
   label: string;
 };
 
+export type BedInfo = {
+  id: number;
+  residentId: number;
+};
 export type BedResidence = Bed & { residence: Residence[] };
 export type FloorResidenceResponse = Array<BedResidence>;
